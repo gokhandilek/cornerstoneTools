@@ -1,10 +1,6 @@
 import { getBoundingBoxAroundPolygon } from '../Boundaries';
 import { pointInPolygon } from '../PointInside';
 
-import { getLogger } from '../../logger.js';
-
-const logger = getLogger('tools:ScissorsTool');
-
 export default function fillInside(
   points,
   segmentationData,
@@ -23,8 +19,6 @@ export default function fillInside(
   const [xMin, yMin] = topLeft;
   const [xMax, yMax] = bottomRight;
 
-  let painted = 0;
-
   // Loop through all of the points inside the bounding box
   for (let i = xMin; i < xMax; i++) {
     for (let j = yMin; j < yMax; j++) {
@@ -33,10 +27,7 @@ export default function fillInside(
 
       if (inside) {
         segmentationData[j * width + i] = labelValue;
-        painted++;
       }
     }
   }
-
-  logger.warn(painted);
 }

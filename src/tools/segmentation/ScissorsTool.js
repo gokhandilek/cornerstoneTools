@@ -132,7 +132,6 @@ export default class ScissorsTool extends BaseTool {
    * @returns {Boolean} True
    */
   _startOutliningRegion(evt) {
-    const consumeEvent = true;
     const element = evt.detail.element;
     const image = evt.detail.currentPoints.image;
     const emptyPoints = !this.handles.points.length;
@@ -147,11 +146,12 @@ export default class ScissorsTool extends BaseTool {
       y: image.y,
       lines: [],
     });
+
     this.currentHandle += 1;
 
     external.cornerstone.updateImage(element);
 
-    return consumeEvent;
+    return true;
   }
 
   /**

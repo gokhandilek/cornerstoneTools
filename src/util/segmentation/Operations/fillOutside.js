@@ -1,9 +1,6 @@
 import { getBoundingBoxAroundPolygon } from '../Boundaries';
 import { pointInPolygon } from '../PointInside';
 import { fillOutsideBoundingBox } from './index';
-import { getLogger } from '../../logger.js';
-
-const logger = getLogger('tools:ScissorsTool');
 
 export default function fillOutside(
   points,
@@ -22,7 +19,7 @@ export default function fillOutside(
   //
   // Outside of the polygon bounding box should definitely be filled
   // Inside of the polygon bounding box should be tested with pointInPolygon
-  let painted = fillOutsideBoundingBox(
+  fillOutsideBoundingBox(
     topLeft,
     bottomRight,
     segmentationData,
@@ -40,10 +37,7 @@ export default function fillOutside(
 
       if (outside) {
         segmentationData[j * width + i] = labelValue;
-        painted++;
       }
     }
   }
-
-  logger.warn(painted);
 }
