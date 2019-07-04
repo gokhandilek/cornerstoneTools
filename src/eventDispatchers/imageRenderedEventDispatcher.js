@@ -1,5 +1,5 @@
 import { state } from './../store/index.js';
-import BaseBrushTool from './../tools/base/BaseBrushTool.js';
+import { BaseBrushSegmentationTool } from '../tools/base';
 import onImageRenderedBrushEventHandler from '../eventListeners/onImageRenderedBrushEventHandler.js';
 import external from './../externalModules.js';
 
@@ -17,7 +17,7 @@ const onImageRendered = function(evt) {
   );
 
   const brushTools = toolsToRender.filter(
-    tool => tool instanceof BaseBrushTool
+    tool => tool instanceof BaseBrushSegmentationTool
   );
 
   onImageRenderedBrushEventHandler(evt);

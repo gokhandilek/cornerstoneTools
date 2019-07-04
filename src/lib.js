@@ -1,6 +1,6 @@
 import BaseTool from './tools/base/BaseTool.js';
 import BaseAnnotationTool from './tools/base/BaseAnnotationTool.js';
-import BaseBrushTool from './tools/base/BaseBrushTool.js';
+import { BaseBrushSegmentationTool } from './tools/base';
 
 import {
   anyHandlesOutsideImage,
@@ -79,7 +79,7 @@ import convertToVector3 from './util/convertToVector3.js';
 export const lib = {
   'base/BaseTool': BaseTool,
   'base/BaseAnnotationTool': BaseAnnotationTool,
-  'base/BaseBrushTool': BaseBrushTool,
+  'base/BaseBrushTool': BaseBrushSegmentationTool,
 
   'tools/cursors/MouseCursor': MouseCursor,
   'tools/cursors': cursors,

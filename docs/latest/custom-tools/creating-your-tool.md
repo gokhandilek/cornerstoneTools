@@ -23,7 +23,7 @@ export default class HelloWorldTool extends BaseTool {
 }
 ```
 
-The constructor must call `super()`, which passes an object to the constructor of the superclass (`BaseTool`, in this case, but the same object is passed to `BaseAnnotationTool` or `BaseBrushTool`). The object passed may have the following properties:
+The constructor must call `super()`, which passes an object to the constructor of the superclass (`BaseTool`, in this case, but the same object is passed to `BaseAnnotationTool` or `BaseBrushSegmentationTool`). The object passed may have the following properties:
 
 | Property                                               | Requirement | description                                                                                                                                             |
 | ------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |

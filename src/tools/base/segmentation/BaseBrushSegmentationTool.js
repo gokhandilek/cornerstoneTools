@@ -1,9 +1,9 @@
-import external from './../../externalModules.js';
-import EVENTS from './../../events.js';
-import BaseTool from './BaseTool.js';
-import isToolActive from './../../store/isToolActive.js';
-import store from './../../store/index.js';
-import { getLogger } from '../../util/logger.js';
+import external from '../../../externalModules.js';
+import EVENTS from '../../../events.js';
+import { BaseSegmentationTool } from '../index';
+import isToolActive from '../../../store/isToolActive.js';
+import store from '../../../store';
+import { getLogger } from '../../../util/logger.js';
 
 const logger = getLogger('tools:BrushTool');
 
@@ -16,7 +16,7 @@ const { state, getters, setters } = store.modules.brush;
  * the cornerstone canvas.
  * @extends Tools.Base.BaseTool
  */
-class BaseBrushTool extends BaseTool {
+class BaseBrushSegmentationTool extends BaseSegmentationTool {
   constructor(props, defaultProps = {}) {
     if (!defaultProps.configuration) {
       defaultProps.configuration = { alwaysEraseOnClick: false };
@@ -274,28 +274,6 @@ class BaseBrushTool extends BaseTool {
   // ===================================================================
 
   /**
-   * Switches to the next segment color.
-   *
-   * @public
-   * @api
-   * @returns {void}
-   */
-  nextSegment() {
-    setters.incrementActiveSegmentIndex(this.element);
-  }
-
-  /**
-   * Switches to the previous segmentation color.
-   *
-   * @public
-   * @api
-   * @returns {void}
-   */
-  previousSegment() {
-    setters.decrementActiveSegmentIndex(this.element);
-  }
-
-  /**
    * Increases the brush size
    *
    * @public
@@ -329,38 +307,12 @@ class BaseBrushTool extends BaseTool {
     setters.radius(newRadius);
   }
 
-  get alpha() {
-    return state.alpha;
-  }
-
-  set alpha(value) {
-    const enabledElement = this._getEnabledElement();
-
-    state.alpha = value;
-    external.cornerstone.updateImage(enabledElement.element);
-  }
-
-  get alphaOfInactiveLabelmap() {
-    return state.alphaOfInactiveLabelmap;
-  }
-
-  set alphaOfInactiveLabelmap(value) {
-    const enabledElement = this._getEnabledElement();
-
-    state.alphaOfInactiveLabelmap = value;
-    external.cornerstone.updateImage(enabledElement.element);
-  }
-
-  _getEnabledElement() {
-    return external.cornerstone.getEnabledElement(this.element);
-  }
-
   _isCtrlDown(eventData) {
     return (eventData.event && eventData.event.ctrlKey) || eventData.ctrlKey;
   }
 
   /**
-   * Returns the toolData type assoicated with this type of tool.
+   * Returns the toolData type associated with this type of tool.
    *
    * @static
    * @public
@@ -371,4 +323,4 @@ class BaseBrushTool extends BaseTool {
   }
 }
 
-export default BaseBrushTool;
+export default BaseBrushSegmentationTool;

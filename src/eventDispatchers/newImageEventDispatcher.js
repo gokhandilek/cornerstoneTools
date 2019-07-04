@@ -1,5 +1,5 @@
 import { state } from './../store/index.js';
-import BaseBrushTool from './../tools/base/BaseBrushTool.js';
+import { BaseBrushSegmentationTool } from '../tools/base';
 import onNewImageBrushEventHandler from '../eventListeners/onNewImageBrushEventHandler.js';
 import external from './../externalModules.js';
 
@@ -29,7 +29,7 @@ const onNewImage = function(evt) {
   });
 
   // Check if any brush tools are present.
-  const brushTools = tools.filter(tool => tool instanceof BaseBrushTool);
+  const brushTools = tools.filter(tool => tool instanceof BaseBrushSegmentationTool);
 
   if (brushTools.length > 0) {
     onNewImageBrushEventHandler(evt);

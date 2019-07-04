@@ -1,9 +1,9 @@
-import BaseBrushTool from './BaseBrushTool.js';
+import BaseBrushSegmentationTool from './BaseBrushSegmentationTool.js';
 
-describe('BaseBrushTool.js', () => {
+describe('BaseBrushSegmentationTool.js', () => {
   describe('constructor()', function() {
     it('should have referencedToolData as brush', () => {
-      const brushTool = new BaseBrushTool();
+      const brushTool = new BaseBrushSegmentationTool();
 
       const configuration = brushTool.configuration;
 

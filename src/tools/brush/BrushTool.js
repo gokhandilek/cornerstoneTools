@@ -1,5 +1,5 @@
 import external from './../../externalModules.js';
-import BaseBrushTool from './../base/BaseBrushTool.js';
+import { BaseBrushSegmentationTool } from '../base';
 import store from './../../store/index.js';
 import brushUtils from './../../util/brush/index.js';
 import EVENTS from '../../events.js';
@@ -16,9 +16,9 @@ const brushModule = store.modules.brush;
  * @class BrushTool
  * @memberof Tools.Brush
  * @classdesc Tool for drawing segmentations on an image.
- * @extends Tools.Base.BaseBrushTool
+ * @extends Tools.Base.BaseBrushSegmentationTool
  */
-export default class BrushTool extends BaseBrushTool {
+export default class BrushTool extends BaseBrushSegmentationTool {
   constructor(props = {}) {
     const defaultProps = {
       name: 'Brush',

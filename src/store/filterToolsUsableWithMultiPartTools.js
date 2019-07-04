@@ -1,5 +1,5 @@
 import BaseAnnotationTool from '../tools/base/BaseAnnotationTool.js';
-import BaseBrushTool from '../tools/base/BaseBrushTool.js';
+import { BaseBrushSegmentationTool } from '../tools/base';
 
 /**
  * Filters an array of tools, returning only tools which are active or passive.
@@ -16,6 +16,6 @@ export default function(tools) {
     tool =>
       !tool.isMultiPartTool &&
       !(tool instanceof BaseAnnotationTool) &&
-      !(tool instanceof BaseBrushTool)
+      !(tool instanceof BaseBrushSegmentationTool)
   );
 }
