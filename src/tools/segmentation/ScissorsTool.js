@@ -139,18 +139,15 @@ export default class ScissorsTool extends BaseTool {
 
     if (!emptyPoints) {
       logger.warn('Something went wrong, empty handles detected.');
-
       return null;
     }
 
-    if (emptyPoints) {
-      this.handles.points.push({
-        x: image.x,
-        y: image.y,
-        lines: [],
-      });
-      this.currentHandle += 1;
-    }
+    this.handles.points.push({
+      x: image.x,
+      y: image.y,
+      lines: [],
+    });
+    this.currentHandle += 1;
 
     external.cornerstone.updateImage(element);
 
