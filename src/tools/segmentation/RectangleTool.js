@@ -4,7 +4,7 @@ import { draw, drawRect, getNewContext } from '../../drawing';
 import {
   fillInsideBoundingBox,
   fillOutsideBoundingBox,
-} from './utils/Operations';
+} from '../../util/segmentation/Operations';
 import external from '../../externalModules';
 import _isEmptyObject from './../../util/isEmptyObject';
 import { setToolCursor } from '../../store/setToolCursor';
@@ -17,7 +17,7 @@ import {
   scissorsRectangleFillInsideCursor,
   scissorsRectangleFillOutsideCursor,
 } from '../cursors';
-import { getBoundingBoxAroundPolygon } from './utils/Boundaries';
+import { getBoundingBoxAroundPolygon } from '../../util/segmentation/Boundaries';
 
 const brushModule = store.modules.brush;
 const { getters } = brushModule;

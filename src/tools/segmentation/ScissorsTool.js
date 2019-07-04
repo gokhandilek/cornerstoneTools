@@ -14,7 +14,7 @@ import {
 } from '../cursors';
 
 import store from '../../store';
-import { fillInside, fillOutside } from './utils';
+import { fillInside, fillOutside } from '../../util/segmentation';
 
 import { getLogger } from '../../util/logger.js';
 

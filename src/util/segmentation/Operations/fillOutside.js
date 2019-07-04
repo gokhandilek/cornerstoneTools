@@ -1,7 +1,7 @@
 import { getBoundingBoxAroundPolygon } from '../Boundaries';
 import { pointInPolygon } from '../PointInside';
 import { fillOutsideBoundingBox } from './index';
-import { getLogger } from '../../../../util/logger.js';
+import { getLogger } from '../../logger.js';
 
 const logger = getLogger('tools:ScissorsTool');
 
