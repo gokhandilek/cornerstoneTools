@@ -1,15 +1,15 @@
-import BrushTool from './BrushTool.js';
-import ScissorsTool from './ScissorsTool.js';
-import RectangleTool from './RectangleTool';
+import BrushTool from './BrushTool';
+import FreehandScissorsTool from './FreehandScissorsTool';
+import RectangleScissorsTool from './RectangleScissorsTool';
 
 // Named Exports
 export { default as BrushTool } from './BrushTool.js';
-export { default as ScissorsTool } from './ScissorsTool.js';
-export { default as RectangleTool } from './RectangleTool.js';
+export { default as FreehandScissorsTool } from './FreehandScissorsTool';
+export { default as RectangleScissorsTool } from './RectangleScissorsTool';
 
 // Namespace, default export
 export default {
   BrushTool,
-  ScissorsTool,
-  RectangleTool,
+  FreehandScissorsTool,
+  RectangleScissorsTool,
 };

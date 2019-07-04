@@ -90,8 +90,8 @@ import {
 } from './tools/annotation/index.js';
 import {
   BrushTool,
-  ScissorsTool,
-  RectangleTool,
+  FreehandScissorsTool,
+  RectangleScissorsTool,
 } from './tools/segmentation/index.js';
 import {
   CrosshairsTool,
@@ -236,7 +236,7 @@ const cornerstoneTools = {
   StackScrollMultiTouchTool,
   StackScrollTool,
   WwwcRegionTool,
-  ScissorsTool,
+  FreehandScissorsTool,
   WwwcTool,
   ZoomMouseWheelTool,
   ZoomTool,
@@ -320,8 +320,8 @@ export {
   TextMarkerTool,
   // ~ Brush Tools
   BrushTool,
-  RectangleTool,
-  ScissorsTool,
+  RectangleScissorsTool,
+  FreehandScissorsTool,
   // ~ Tools
   CrosshairsTool,
   DoubleTapFitToWindowTool,

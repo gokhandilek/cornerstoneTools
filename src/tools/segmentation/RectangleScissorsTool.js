@@ -1,39 +1,39 @@
-import external from '../../externalModules.js';
-import BaseTool from '../base/BaseTool.js';
-import { setToolCursor } from '../../store/setToolCursor.js';
-
-// Drawing
-import { draw, drawJoinedLines, getNewContext } from '../../drawing';
-import toolColors from '../../stateManagement/toolColors.js';
-
+import { BaseSegmentationTool } from '../base';
+import toolColors from '../../stateManagement/toolColors';
+import { draw, drawRect, getNewContext } from '../../drawing';
 import {
-  scissorsFillInsideCursor,
-  scissorsEraseInsideCursor,
-  scissorsEraseOutsideCursor,
-  scissorsFillOutsideCursor,
-} from '../cursors';
-
+  fillInsideBoundingBox,
+  fillOutsideBoundingBox,
+} from '../../util/segmentation/Operations';
+import external from '../../externalModules';
+import _isEmptyObject from './../../util/isEmptyObject';
+import { setToolCursor } from '../../store/setToolCursor';
 import store from '../../store';
-import { fillInside, fillOutside } from '../../util/segmentation';
 
-import { getLogger } from '../../util/logger.js';
+// Cursors
+import {
+  scissorsRectangleEraseInsideCursor,
+  scissorsRectangleEraseOutsideCursor,
+  scissorsRectangleFillInsideCursor,
+  scissorsRectangleFillOutsideCursor,
+} from '../cursors';
+import { getBoundingBoxAroundPolygon } from '../../util/segmentation/Boundaries';
 
-const logger = getLogger('tools:ScissorsTool');
 const brushModule = store.modules.brush;
 const { getters } = brushModule;
 
 /**
  * @public
- * @class ScissorsTool
+ * @class RectangleScissorsTool
  * @memberof Tools
- * @classdesc Tool for slicing brush pixel data
- * @extends Tools.Base.BaseTool
+ * @classdesc Tool for slicing brush pixel data within a rectangle shape
+ * @extends Tools.Base.BaseSegmentationTool
  */
-export default class ScissorsTool extends BaseTool {
+export default class RectangleScissorsTool extends BaseSegmentationTool {
   /** @inheritdoc */
   constructor(props = {}) {
     const defaultProps = {
-      name: 'Scissors',
+      name: 'RectangleScissors',
       configuration: {
         referencedToolData: 'brush',
       },
@@ -46,11 +46,10 @@ export default class ScissorsTool extends BaseTool {
       },
       defaultStrategy: 'default',
       supportedInteractionTypes: ['Mouse', 'Touch'],
-      svgCursor: scissorsFillInsideCursor,
+      svgCursor: scissorsRectangleFillInsideCursor,
     };
 
     super(props, defaultProps);
-
     this._resetHandles();
 
     //
@@ -82,9 +81,6 @@ export default class ScissorsTool extends BaseTool {
 
     /** @inheritdoc */
     this.mouseUpCallback = this._applyStrategy.bind(this);
-
-    this._changeStrategy = this._changeStrategy.bind(this);
-    this._changeStrategy();
   }
 
   /**
@@ -99,28 +95,11 @@ export default class ScissorsTool extends BaseTool {
     const { element } = eventData;
     const color = toolColors.getColorIfActive({ active: true });
     const context = getNewContext(eventData.canvasContext.canvas);
-    const handles = this.handles;
 
     draw(context, context => {
-      if (handles.points.length > 1) {
-        for (let j = 0; j < handles.points.length; j++) {
-          const lines = [...handles.points[j].lines];
-          const points = handles.points;
-
-          if (j === points.length - 1) {
-            // If it's still being actively drawn, keep the last line to
-            // The mouse location
-            lines.push(this.handles.points[0]);
-          }
-          drawJoinedLines(
-            context,
-            element,
-            this.handles.points[j],
-            lines,
-            color
-          );
-        }
-      }
+      drawRect(context, element, this.handles.start, this.handles.end, {
+        color,
+      });
     });
   }
 
@@ -132,26 +111,20 @@ export default class ScissorsTool extends BaseTool {
    * @returns {Boolean} True
    */
   _startOutliningRegion(evt) {
+    const consumeEvent = true;
     const element = evt.detail.element;
     const image = evt.detail.currentPoints.image;
-    const emptyPoints = !this.handles.points.length;
 
-    if (!emptyPoints) {
-      logger.warn('Something went wrong, empty handles detected.');
-      return null;
+    if (_isEmptyObject(this.handles.start)) {
+      this.handles.start = image;
+    } else {
+      this.handles.end = image;
+      this._applyStrategy(evt);
     }
-
-    this.handles.points.push({
-      x: image.x,
-      y: image.y,
-      lines: [],
-    });
-
-    this.currentHandle += 1;
 
     external.cornerstone.updateImage(element);
 
-    return true;
+    return consumeEvent;
   }
 
   /**
@@ -163,11 +136,41 @@ export default class ScissorsTool extends BaseTool {
    * @returns {void}
    */
   _setHandlesAndUpdate(evt) {
-    const eventData = evt.detail;
-    const element = evt.detail.element;
+    const {
+      element,
+      currentPoints: { image },
+    } = evt.detail;
 
-    this._addPoint(eventData);
+    this.handles.end = image;
     external.cornerstone.updateImage(element);
+  }
+
+  /**
+   * Event handler for MOUSE_UP/TOUCH_END during handle drag event loop.
+   *
+   * @private
+   * @method _applyStrategy
+   * @param {(CornerstoneTools.event#MOUSE_UP|CornerstoneTools.event#TOUCH_END)} evt Interaction event emitted by an enabledElement
+   * @returns {void}
+   */
+  _applyStrategy(evt) {
+    evt.detail.handles = this.handles;
+    this._applySegmentationChanges(evt);
+    this._resetHandles();
+  }
+
+  /**
+   * Sets the start and end handle points to empty objects
+   *
+   * @private
+   * @method _resetHandles
+   * @returns {undefined}
+   */
+  _resetHandles() {
+    this.handles = {
+      start: {},
+      end: {},
+    };
   }
 
   /**
@@ -184,78 +187,17 @@ export default class ScissorsTool extends BaseTool {
     }
 
     const cursorList = {
-      FILL_INSIDE: scissorsFillInsideCursor,
-      FILL_OUTSIDE: scissorsFillOutsideCursor,
-      ERASE_OUTSIDE: scissorsEraseOutsideCursor,
-      ERASE_INSIDE: scissorsEraseInsideCursor,
-      default: scissorsFillInsideCursor,
+      FILL_INSIDE: scissorsRectangleFillInsideCursor,
+      FILL_OUTSIDE: scissorsRectangleFillOutsideCursor,
+      ERASE_OUTSIDE: scissorsRectangleEraseOutsideCursor,
+      ERASE_INSIDE: scissorsRectangleEraseInsideCursor,
+      default: scissorsRectangleFillInsideCursor,
     };
 
     const newCursor = cursorList[strategy] || cursorList.default;
 
     setToolCursor(element, newCursor);
     external.cornerstone.updateImage(element);
-  }
-
-  /**
-   * Event handler for MOUSE_UP/TOUCH_END during handle drag event loop.
-   *
-   * @private
-   * @method _applyStrategy
-   * @param {(CornerstoneTools.event#MOUSE_UP|CornerstoneTools.event#TOUCH_END)} evt Interaction event emitted by an enabledElement
-   * @returns {void}
-   */
-  _applyStrategy(evt) {
-    this._applySegmentationChanges(evt);
-    this._resetHandles();
-    external.cornerstone.updateImage(evt.detail.element);
-  }
-
-  /**
-   * Sets the start and end handle points to empty objects
-   *
-   * @private
-   * @method _resetHandles
-   * @returns {undefined}
-   */
-  _resetHandles() {
-    this.handles = {
-      points: [],
-    };
-
-    this.currentHandle = 0;
-  }
-
-  /**
-   * Adds a point on mouse click in polygon mode.
-   *
-   * @private
-   * @param {Object} eventData - data object associated with an event.
-   * @returns {undefined}
-   */
-  _addPoint(eventData) {
-    // If this is not the first handle
-    if (this.handles.points.length) {
-      // Add the line from the current handle to the new handle
-      this.handles.points[this.currentHandle - 1].lines.push({
-        x: eventData.currentPoints.image.x,
-        y: eventData.currentPoints.image.y,
-        lines: [],
-      });
-    }
-
-    // Add the new handle
-    this.handles.points.push({
-      x: eventData.currentPoints.image.x,
-      y: eventData.currentPoints.image.y,
-      lines: [],
-    });
-
-    // Increment the current handle value
-    this.currentHandle += 1;
-
-    // Force onImageRendered to fire
-    external.cornerstone.updateImage(eventData.element);
   }
 
   /**
@@ -271,7 +213,16 @@ export default class ScissorsTool extends BaseTool {
   }
 
   _applySegmentationChanges(evt) {
-    const points = this.handles.points;
+    const points = [
+      {
+        x: this.handles.start.x,
+        y: this.handles.start.y,
+      },
+      {
+        x: this.handles.end.x,
+        y: this.handles.end.y,
+      },
+    ];
     const { image, element } = evt.detail;
 
     const {
@@ -298,29 +249,34 @@ export default class ScissorsTool extends BaseTool {
 
     // Invalidate the brush tool data so it is redrawn
     labelmap3D.labelmaps2D[currentImageIdIndex].invalidated = true;
+    external.cornerstone.updateImage(element);
   }
 }
 
 function _fillInsideStrategy(evt) {
   const { points, segmentationData, image } = evt.OperationData;
 
-  fillInside(points, segmentationData, image, 1);
+  fillInsideBoundingBox(points, segmentationData, image, 1);
 }
 
 function _fillOutsideStrategy(evt) {
   const { points, segmentationData, image } = evt.OperationData;
+  const vertices = points.map(a => [a.x, a.y]);
+  const [topLeft, bottomRight] = getBoundingBoxAroundPolygon(vertices, image);
 
-  fillOutside(points, segmentationData, image, 1);
+  fillOutsideBoundingBox(topLeft, bottomRight, segmentationData, image, 1);
 }
 
 function _eraseOutsideStrategy(evt) {
   const { points, segmentationData, image } = evt.OperationData;
+  const vertices = points.map(a => [a.x, a.y]);
+  const [topLeft, bottomRight] = getBoundingBoxAroundPolygon(vertices, image);
 
-  fillOutside(points, segmentationData, image, 0);
+  fillOutsideBoundingBox(topLeft, bottomRight, segmentationData, image, 0);
 }
 
 function _eraseInsideStrategy(evt) {
   const { points, segmentationData, image } = evt.OperationData;
 
-  fillInside(points, segmentationData, image, 0);
+  fillInsideBoundingBox(points, segmentationData, image, 0);
 }

@@ -57,9 +57,7 @@
           <li><a href="#" data-tool="Eraser">Eraser</a></li>
           <li><a href="#" data-tool="FreehandRoi">FreehandRoi</a></li>
           <li>
-            <a href="#" data-tool="FreehandRoiSculptor"
-              >FreehandRoiSculptor</a
-            >
+            <a href="#" data-tool="FreehandRoiSculptor">FreehandRoiSculptor</a>
           </li>
           <li><a href="#" data-tool="Brush">BrushTool</a></li>
           <li><a href="#" data-tool="TextMarker">TextMarker</a></li>
@@ -76,8 +74,12 @@
           <li><a href="#" data-tool="StackScroll">StackScroll</a></li>
           <li><a href="#" data-tool="Wwwc">WWWC</a></li>
           <li><a href="#" data-tool="WwwcRegion">WWWCRegion</a></li>
-          <li><a href="#" data-tool="Scissors">ScissorsTool</a></li>
-          <li><a href="#" data-tool="Rectangle">RectangleTool</a></li>
+          <li>
+            <a href="#" data-tool="FreehandScissors">FreehandScissors</a>
+          </li>
+          <li>
+            <a href="#" data-tool="RectangleScissors">RectangleScissors</a>
+          </li>
           <li><a href="#" data-tool="Zoom">Zoom</a></li>
         </ul>
         <ul class="tool-category" data-tool-category="double-tap">
@@ -369,10 +371,13 @@
     });
 
     // Activate first tool
-    cornerstoneTools.setToolActive(cornerstoneTools.store.state.tools[44].name, {
-      mouseButtonMask: 1,
-      isTouchActive: true,
-    });
+    cornerstoneTools.setToolActive(
+      cornerstoneTools.store.state.tools[44].name,
+      {
+        mouseButtonMask: 1,
+        isTouchActive: true,
+      }
+    );
 
     const setToolCategoryActive = categoryName => {
       Array.from(toolCategoryLinks).forEach(toolLink => {

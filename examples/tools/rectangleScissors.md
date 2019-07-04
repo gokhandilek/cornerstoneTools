@@ -1,9 +1,9 @@
 ---
 layout: tool-custom-menu
-title: Scissors Tool
-toolName: Scissors
-toolType: brush
-customButtons: scissorsButtons.html
+title: Rectangle Scissors Tool
+toolName: RectangleScissors
+toolType: segmentation
+customButtons: segmentationButtons.html
 ---
 
 {% include tool-simple-code-snippet.md %}

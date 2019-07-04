@@ -1,4 +1,4 @@
-import ScissorsTool from './ScissorsTool';
+import FreehandScissorsTool from './FreehandScissorsTool';
 
 jest.mock('./../../externalModules.js', () => ({
   cornerstone: {
@@ -18,18 +18,18 @@ const mockEvt = {
   },
 };
 
-describe('ScissorsTool.js', () => {
+describe('FreehandScissorsTool.js', () => {
   describe('Initialization', () => {
-    it('Instantiate ScissorsTool Correctly', () => {
-      const defaultName = 'Scissors';
-      const instantiatedTool = new ScissorsTool();
+    it('Instantiate FreehandScissorsTool Correctly', () => {
+      const defaultName = 'FreehandScissors';
+      const instantiatedTool = new FreehandScissorsTool();
 
       expect(instantiatedTool.name).toEqual(defaultName);
     });
 
     it('allows a custom name', () => {
       const customToolName = { name: 'CustomScissorsName' };
-      const instantiatedTool = new ScissorsTool(customToolName);
+      const instantiatedTool = new FreehandScissorsTool(customToolName);
 
       expect(instantiatedTool.name).toEqual(customToolName.name);
     });
@@ -39,7 +39,7 @@ describe('ScissorsTool.js', () => {
     let instantiatedTool;
 
     beforeEach(() => {
-      instantiatedTool = new ScissorsTool();
+      instantiatedTool = new FreehandScissorsTool();
     });
 
     it('Calls right method on postMouseDownCallback ', () => {
