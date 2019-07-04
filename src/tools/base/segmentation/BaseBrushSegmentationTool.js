@@ -1,6 +1,6 @@
 import external from '../../../externalModules.js';
 import EVENTS from '../../../events.js';
-import { BaseSegmentationTool } from '../index';
+import BaseSegmentationTool from '../BaseSegmentationTool';
 import isToolActive from '../../../store/isToolActive.js';
 import store from '../../../store';
 import { getLogger } from '../../../util/logger.js';
@@ -11,7 +11,7 @@ const { state, getters, setters } = store.modules.brush;
 
 /**
  * @abstract
- * @memberof Tools.Base
+ * @memberof Tools.BaseSegmentationTool
  * @classdesc Abstract class for tools which manipulate the mask data to be displayed on
  * the cornerstone canvas.
  * @extends Tools.Base.BaseTool
