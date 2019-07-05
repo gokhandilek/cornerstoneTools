@@ -1,4 +1,7 @@
 import BaseSegmentationAPI from './BaseSegmentationAPI';
+import { setToolCursor } from '../../store/setToolCursor.js';
+import external from '../../externalModules.js';
+import { getCursor } from './../../util/segmentation';
 
 class BaseSegmentationEvents extends BaseSegmentationAPI {
   constructor(props, defaultProps = {}) {
@@ -35,6 +38,7 @@ class BaseSegmentationEvents extends BaseSegmentationAPI {
     this.mouseUpCallback = this._applyStrategy.bind(this);
 
     this._resetHandles();
+    this.changeStrategy = this.changeStrategy.bind(this);
   }
 
   // ===================================================================
@@ -81,6 +85,21 @@ class BaseSegmentationEvents extends BaseSegmentationAPI {
   }
 
   /**
+   * This function changes the current Strategy
+   *
+   * @public
+   * @param {string} strategy - The strategy string.
+   * @returns {void}
+   */
+  changeStrategy(strategy = 'default') {
+    this.setActiveStrategy(strategy);
+    setTimeout(() => {
+      this.changeCursor(this.element, strategy);
+    }, 50);
+    this._resetHandles();
+  }
+
+  /**
    * Event handler for MOUSE_UP/TOUCH_END during handle drag event loop.
    *
    * @abstract
@@ -100,6 +119,24 @@ class BaseSegmentationEvents extends BaseSegmentationAPI {
    */
   _resetHandles() {
     throw new Error(`Method _resetHandles not implemented for ${this.name}.`);
+  }
+
+  /**
+   * Function responsible for changing the Cursor, according to the strategy
+   * @param {HTMLElement} element
+   * @param {string} strategy The strategy to be used on Tool
+   * @param {Object} cursorList The strategy to be used on Tool
+   * @public
+   * @returns {void}
+   */
+  changeCursor(element, strategy) {
+    // Necessary to avoid setToolCursor call without elements, what throws an error
+    if (!element) {
+      return;
+    }
+
+    setToolCursor(element, getCursor(this.name, strategy));
+    external.cornerstone.updateImage(element);
   }
 }
 

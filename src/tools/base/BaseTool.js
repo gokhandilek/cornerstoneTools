@@ -64,12 +64,12 @@ class BaseTool {
     // or via a tool's option's setter
     this._options = {};
 
-    // Configuration is set at tool initalization
+    // Configuration is set at tool initialization
     this._configuration = Object.assign({}, configuration);
 
     // `updateOnMouseMove` causes the frame to render on every mouse move when
     // the tool is active. This is useful for tools that render large/dynamic
-    // items to the canvas which can't easily be respresented with an SVG Cursor.
+    // items to the canvas which can't easily be represented with an SVG Cursor.
     this.updateOnMouseMove = false;
     this.hideDefaultCursor = false;
 
@@ -175,7 +175,8 @@ class BaseTool {
   /**
    * Change the active strategy.
    *
-   * @abstract
+   * @public
+   * @method setActiveStrategy
    * @param  {string} strategy
    * @returns {null}
    */
@@ -184,7 +185,7 @@ class BaseTool {
   }
 
   // ===================================================================
-  // Virtual Methods - Have default behavior but may be overriden.
+  // Virtual Methods - Have default behavior but may be overridden.
   // ===================================================================
 
   //

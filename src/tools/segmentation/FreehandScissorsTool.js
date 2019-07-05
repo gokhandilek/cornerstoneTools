@@ -1,15 +1,6 @@
-import external from '../../externalModules.js';
 import { BaseFreehandSegmentationTool } from '../base/segmentation';
-import { setToolCursor } from '../../store/setToolCursor.js';
-
-import {
-  scissorsFillInsideCursor,
-  scissorsEraseInsideCursor,
-  scissorsEraseOutsideCursor,
-  scissorsFillOutsideCursor,
-} from '../cursors';
-
-import { fillInside, fillOutside } from '../../util/segmentation';
+import { freehandFillInsideCursor } from '../cursors';
+import { fill } from '../../util/segmentation';
 
 /**
  * @public
@@ -35,107 +26,25 @@ export default class FreehandScissorsTool extends BaseFreehandSegmentationTool {
       },
       defaultStrategy: 'default',
       supportedInteractionTypes: ['Mouse', 'Touch'],
-      svgCursor: scissorsFillInsideCursor,
+      svgCursor: freehandFillInsideCursor,
     };
 
     super(props, defaultProps);
-
-    this._changeStrategy = this._changeStrategy.bind(this);
-    this._changeStrategy();
-  }
-
-  /**
-   * Function responsible for changing the Cursor, according to the strategy
-   * @param {HTMLElement} element
-   * @param {string} strategy The strategy to be used on Tool
-   * @private
-   * @returns {void}
-   */
-  _changeCursor(element, strategy) {
-    // Necessary to avoid setToolCursor without elements, what throws an error
-    if (!this.element) {
-      return;
-    }
-
-    const cursorList = {
-      FILL_INSIDE: scissorsFillInsideCursor,
-      FILL_OUTSIDE: scissorsFillOutsideCursor,
-      ERASE_OUTSIDE: scissorsEraseOutsideCursor,
-      ERASE_INSIDE: scissorsEraseInsideCursor,
-      default: scissorsFillInsideCursor,
-    };
-
-    const newCursor = cursorList[strategy] || cursorList.default;
-
-    setToolCursor(element, newCursor);
-    external.cornerstone.updateImage(element);
-  }
-
-  /**
-   * Adds a point on mouse click in polygon mode.
-   *
-   * @private
-   * @param {Object} eventData - data object associated with an event.
-   * @returns {undefined}
-   */
-  _addPoint(eventData) {
-    // If this is not the first handle
-    if (this.handles.points.length) {
-      // Add the line from the current handle to the new handle
-      this.handles.points[this.currentHandle - 1].lines.push({
-        x: eventData.currentPoints.image.x,
-        y: eventData.currentPoints.image.y,
-        lines: [],
-      });
-    }
-
-    // Add the new handle
-    this.handles.points.push({
-      x: eventData.currentPoints.image.x,
-      y: eventData.currentPoints.image.y,
-      lines: [],
-    });
-
-    // Increment the current handle value
-    this.currentHandle += 1;
-
-    // Force onImageRendered to fire
-    external.cornerstone.updateImage(eventData.element);
-  }
-
-  /**
-   * Change Strategy Method
-   * @param { string } strategy
-   * @private
-   * @returns {void}
-   */
-  _changeStrategy(strategy = 'default') {
-    this.setActiveStrategy(strategy);
-    this._changeCursor(this.element, strategy);
-    this._resetHandles();
   }
 }
 
 function _fillInsideStrategy(evt) {
-  const { points, segmentationData, image } = evt.OperationData;
-
-  fillInside(points, segmentationData, image, 1);
+  fill('Freehand', 'FILL_INSIDE', evt);
 }
 
 function _fillOutsideStrategy(evt) {
-  const { points, segmentationData, image } = evt.OperationData;
-
-  fillOutside(points, segmentationData, image, 1);
+  fill('Freehand', 'FILL_OUTSIDE', evt);
 }
 
 function _eraseOutsideStrategy(evt) {
-  const { points, segmentationData, image } = evt.OperationData;
-
-  fillOutside(points, segmentationData, image, 0);
+  fill('Freehand', 'ERASE_OUTSIDE', evt);
 }
 
 function _eraseInsideStrategy(evt) {
-  const { points, segmentationData, image } = evt.OperationData;
-
-  fillInside(points, segmentationData, image, 0);
+  fill('Freehand', 'ERASE_INSIDE', evt);
 }

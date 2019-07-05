@@ -17,7 +17,6 @@ class BaseFreehandSegmentationTool extends BaseSegmentationTool {
     }
 
     defaultProps.configuration.referencedToolData = 'segmentation';
-
     super(props, defaultProps);
   }
 
@@ -63,7 +62,7 @@ class BaseFreehandSegmentationTool extends BaseSegmentationTool {
    *
    * @private
    * @param {*} evt // mousedown, touchstart, click
-   * @returns {Boolean} True
+   * @returns {void|null}
    */
   _startOutliningRegion(evt) {
     const element = evt.detail.element;
@@ -85,8 +84,6 @@ class BaseFreehandSegmentationTool extends BaseSegmentationTool {
     this.currentHandle += 1;
 
     external.cornerstone.updateImage(element);
-
-    return true;
   }
 
   /**
@@ -159,6 +156,38 @@ class BaseFreehandSegmentationTool extends BaseSegmentationTool {
     };
 
     this.currentHandle = 0;
+  }
+
+  /**
+   * Adds a point on mouse click in polygon mode.
+   *
+   * @private
+   * @param {Object} eventData - data object associated with an event.
+   * @returns {undefined}
+   */
+  _addPoint(eventData) {
+    // If this is not the first handle
+    if (this.handles.points.length) {
+      // Add the line from the current handle to the new handle
+      this.handles.points[this.currentHandle - 1].lines.push({
+        x: eventData.currentPoints.image.x,
+        y: eventData.currentPoints.image.y,
+        lines: [],
+      });
+    }
+
+    // Add the new handle
+    this.handles.points.push({
+      x: eventData.currentPoints.image.x,
+      y: eventData.currentPoints.image.y,
+      lines: [],
+    });
+
+    // Increment the current handle value
+    this.currentHandle += 1;
+
+    // Force onImageRendered to fire
+    external.cornerstone.updateImage(eventData.element);
   }
 }
 
