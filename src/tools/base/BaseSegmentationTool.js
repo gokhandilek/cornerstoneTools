@@ -1,24 +1,40 @@
-import external from './../../externalModules.js';
-import BaseTool from './BaseTool.js';
-import store from './../../store/index.js';
+import BaseSegmentationAPI from './BaseSegmentationAPI';
 
-const { state, setters } = store.modules.brush;
-
-/**
- * @abstract
- * @memberof Tools.Base
- * @classdesc Abstract class for tools which manipulate the mask data to be displayed on
- * the cornerstone canvas.
- * @extends Tools.Base.BaseTool
- */
-class BaseSegmentationTool extends BaseTool {
+class BaseSegmentationEvents extends BaseSegmentationAPI {
   constructor(props, defaultProps = {}) {
-    if (!defaultProps.configuration) {
-      defaultProps.configuration = { alwaysEraseOnClick: false };
-    }
-    defaultProps.configuration.referencedToolData = 'segmentation';
-
     super(props, defaultProps);
+
+    //
+    // Touch
+    //
+    /** @inheritdoc */
+    this.postTouchStartCallback = this._startOutliningRegion.bind(this);
+
+    /** @inheritdoc */
+    this.touchDragCallback = this._setHandlesAndUpdate.bind(this);
+
+    /** @inheritdoc */
+    this.touchEndCallback = this._applyStrategy.bind(this);
+
+    //
+    // MOUSE
+    //
+    /** @inheritdoc */
+    this.postMouseDownCallback = this._startOutliningRegion.bind(this);
+
+    /** @inheritdoc */
+    this.mouseClickCallback = this._startOutliningRegion.bind(this);
+
+    /** @inheritdoc */
+    this.mouseDragCallback = this._setHandlesAndUpdate.bind(this);
+
+    /** @inheritdoc */
+    this.mouseMoveCallback = this._setHandlesAndUpdate.bind(this);
+
+    /** @inheritdoc */
+    this.mouseUpCallback = this._applyStrategy.bind(this);
+
+    this._resetHandles();
   }
 
   // ===================================================================
@@ -31,76 +47,60 @@ class BaseSegmentationTool extends BaseTool {
    * @override
    * @param {Object} evt - The event.
    */
+  // eslint-disable-next-line no-unused-vars
   renderToolData(evt) {
     throw new Error(`Method renderToolData not implemented for ${this.name}.`);
   }
 
-  // ===================================================================
-  // Virtual Methods - Have default behavior but may be overridden.
-  // ===================================================================
-
-  // ===================================================================
-  // Segmentation API. This is effectively a wrapper around the store.
-  // ===================================================================
-
   /**
-   * Switches to the next segment color.
+   * Sets the start handle point and claims the eventDispatcher event
    *
-   * @public
-   * @api
+   * @abstract
+   * @param {Object} evt - The event.
    * @returns {void}
    */
-  nextSegment() {
-    setters.incrementActiveSegmentIndex(this.element);
+  // eslint-disable-next-line no-unused-vars
+  _startOutliningRegion(evt) {
+    throw new Error(
+      `Method _startOutliningRegion not implemented for ${this.name}.`
+    );
   }
 
   /**
-   * Switches to the previous segmentation color.
+   * This function will update the handles and updateImage to force re-draw
    *
-   * @public
-   * @api
+   * @abstract
+   * @param {Object} evt - The event.
    * @returns {void}
    */
-  previousSegment() {
-    setters.decrementActiveSegmentIndex(this.element);
-  }
-
-  get alpha() {
-    return state.alpha;
-  }
-
-  set alpha(value) {
-    const enabledElement = this._getEnabledElement();
-
-    state.alpha = value;
-    external.cornerstone.updateImage(enabledElement.element);
-  }
-
-  get alphaOfInactiveLabelmap() {
-    return state.alphaOfInactiveLabelmap;
-  }
-
-  set alphaOfInactiveLabelmap(value) {
-    const enabledElement = this._getEnabledElement();
-
-    state.alphaOfInactiveLabelmap = value;
-    external.cornerstone.updateImage(enabledElement.element);
-  }
-
-  _getEnabledElement() {
-    return external.cornerstone.getEnabledElement(this.element);
+  // eslint-disable-next-line no-unused-vars
+  _setHandlesAndUpdate(evt) {
+    throw new Error(
+      `Method _setHandlesAndUpdate not implemented for ${this.name}.`
+    );
   }
 
   /**
-   * Returns the toolData type associated with this type of tool.
+   * Event handler for MOUSE_UP/TOUCH_END during handle drag event loop.
    *
-   * @static
-   * @public
-   * @returns {String} The number of colors in the color map.
+   * @abstract
+   * @param {Object} evt - The event.
+   * @returns {void}
    */
-  static getReferencedToolDataName() {
-    return 'segmentation';
+  // eslint-disable-next-line no-unused-vars
+  _applyStrategy(evt) {
+    throw new Error(`Method _applyStrategy not implemented for ${this.name}.`);
+  }
+
+  /**
+   * Sets the start and end handle points to empty objects
+   *
+   * @abstract
+   * @returns {void}
+   */
+  _resetHandles() {
+    throw new Error(`Method _resetHandles not implemented for ${this.name}.`);
   }
 }
 
-export default BaseSegmentationTool;
+export default BaseSegmentationEvents;

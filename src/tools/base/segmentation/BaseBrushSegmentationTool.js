@@ -1,22 +1,19 @@
 import external from '../../../externalModules.js';
 import EVENTS from '../../../events.js';
-import BaseSegmentationTool from '../BaseSegmentationTool';
+import BaseSegmentationAPI from '../BaseSegmentationAPI';
 import isToolActive from '../../../store/isToolActive.js';
 import store from '../../../store';
-import { getLogger } from '../../../util/logger.js';
-
-const logger = getLogger('tools:BrushTool');
 
 const { state, getters, setters } = store.modules.brush;
 
 /**
  * @abstract
- * @memberof Tools.BaseSegmentationTool
+ * @memberof Tools.Base
  * @classdesc Abstract class for tools which manipulate the mask data to be displayed on
  * the cornerstone canvas.
- * @extends Tools.Base.BaseTool
+ * @extends Tools.Base.BaseSegmentationAPI
  */
-class BaseBrushSegmentationTool extends BaseSegmentationTool {
+class BaseBrushSegmentationTool extends BaseSegmentationAPI {
   constructor(props, defaultProps = {}) {
     if (!defaultProps.configuration) {
       defaultProps.configuration = { alwaysEraseOnClick: false };
