@@ -12,6 +12,12 @@ const { getters } = brushModule;
 
 class BaseFreehandSegmentationTool extends BaseSegmentationTool {
   constructor(props, defaultProps = {}) {
+    if (!defaultProps.configuration) {
+      defaultProps.configuration = { alwaysEraseOnClick: false };
+    }
+
+    defaultProps.configuration.referencedToolData = 'segmentation';
+
     super(props, defaultProps);
   }
 

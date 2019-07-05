@@ -13,11 +13,6 @@ const { state, setters } = store.modules.brush;
  */
 class BaseSegmentationAPI extends BaseTool {
   constructor(props, defaultProps = {}) {
-    if (!defaultProps.configuration) {
-      defaultProps.configuration = { alwaysEraseOnClick: false };
-    }
-    defaultProps.configuration.referencedToolData = 'segmentation';
-
     super(props, defaultProps);
   }
 
@@ -71,17 +66,6 @@ class BaseSegmentationAPI extends BaseTool {
 
   _getEnabledElement() {
     return external.cornerstone.getEnabledElement(this.element);
-  }
-
-  /**
-   * Returns the toolData type associated with this type of tool.
-   *
-   * @static
-   * @public
-   * @returns {String} The number of colors in the color map.
-   */
-  static getReferencedToolDataName() {
-    return 'segmentation';
   }
 }
 
